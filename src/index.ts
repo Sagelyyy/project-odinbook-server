@@ -11,6 +11,8 @@ import { Strategy as FacebookStrategy, Profile } from "passport-facebook";
 import User from "./models/User";
 import https from "https";
 import fs from "fs";
+import session from "express-session";
+import morgan from "morgan";
 
 const privateKey = fs.readFileSync("server.key", "utf8");
 const certificate = fs.readFileSync("server.cert", "utf8");
@@ -29,6 +31,18 @@ mongoose
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
+
+app.use(morgan("dev"));
+
+app.set("trust proxy", 1);
+app.use(
+  session({
+    secret: "superNova",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true },
+  })
+);
 
 passport.use(
   new FacebookStrategy(
