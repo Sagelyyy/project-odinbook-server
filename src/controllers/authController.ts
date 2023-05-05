@@ -10,19 +10,27 @@ export const auth_facebook_cb = (
 ) => {
   passport.authenticate(
     "facebook",
-    { failureRedirect: "/" },
+    {
+      failureRedirect: process.env.DEVELOPMENT
+        ? "http://localhost:5173"
+        : "TBD",
+    },
     function (err: Error, user: any, info: any) {
       if (err) {
         return next(err);
       }
       if (!user) {
-        return res.redirect("/");
+        return res.redirect(
+          process.env.DEVELOPMENT ? "http://localhost:5173" : "TBD"
+        );
       }
       req.logIn(user, function (err) {
         if (err) {
           return next(err);
         }
-        return res.redirect("/");
+        return res.redirect(
+          process.env.DEVELOPMENT ? "http://localhost:5173" : "TBD"
+        );
       });
     }
   )(req, res, next);

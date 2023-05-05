@@ -1,7 +1,6 @@
 import express from "express";
 import { body, validationResult } from "express-validator";
 import Post from "../models/Post";
-import { error } from "console";
 
 export const post_get = (
   req: express.Request,
@@ -14,7 +13,7 @@ export const post_get = (
 export const post_post = [
   body("content", "Post invalid").not().isEmpty().trim().escape(),
   (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    if (req.user) {
+    if (req.isAuthenticated()) {
       const errors = validationResult(req);
       let errorMessages = validationResult(req).array();
       if (!errors.isEmpty()) {
@@ -23,7 +22,7 @@ export const post_post = [
       }
       const newPost = new Post({
         content: req.body.content,
-        user: req.user.id,
+        userId: req.user.id,
       })
         .save()
         .then((savedPost) => {
@@ -31,7 +30,7 @@ export const post_post = [
         })
         .catch((err) => {
           console.log(err);
-          res.json({ message: "Error", err });
+          res.status(400).json({ message: "Error", err });
         });
     } else {
       res.sendStatus(403);
