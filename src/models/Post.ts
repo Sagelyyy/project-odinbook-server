@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb";
 const PostSchema = new mongoose.Schema({
   userId: {
     type: ObjectId,
-    ref: "User",
+    ref: "FacebookUser",
     required: true,
   },
   content: {

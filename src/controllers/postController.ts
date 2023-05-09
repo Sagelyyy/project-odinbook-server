@@ -1,13 +1,27 @@
 import express from "express";
 import { body, validationResult } from "express-validator";
 import Post from "../models/Post";
+import FacebookUser from "../models/User";
 
 export const post_get = (
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
 ) => {
-  res.json({ message: "TODO post get" });
+  if (req.isAuthenticated()) {
+    Post.find()
+      .populate("userId")
+      .then((post) => {
+        res.json({ message: "success", post });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(400).json({ message: "Error", err });
+        return next(err);
+      });
+  } else {
+    res.status(403).json({ message: "Not authenticated" });
+  }
 };
 
 export const post_post = [
