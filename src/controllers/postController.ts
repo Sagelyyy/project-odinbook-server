@@ -1,7 +1,6 @@
 import express from "express";
 import { body, validationResult } from "express-validator";
 import Post from "../models/Post";
-import FacebookUser from "../models/User";
 
 export const post_get = (
   req: express.Request,
