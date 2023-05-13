@@ -10,6 +10,7 @@ export const post_get = (
   if (req.isAuthenticated()) {
     Post.find()
       .populate("userId")
+      .sort({ createdAt: "descending" })
       .then((post) => {
         res.json({ message: "success", post });
       })

@@ -9,7 +9,7 @@ const CommentSchema = new mongoose.Schema({
   },
   userId: {
     type: ObjectId,
-    ref: "User",
+    ref: "FacebookUser",
     required: true,
   },
   content: {
