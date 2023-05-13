@@ -30,12 +30,10 @@ export const post_comment_get = (
   next: express.NextFunction
 ) => {
   if (req.isAuthenticated()) {
-    console.log(req.params.id);
     Comment.find({ postId: req.params.id })
       .populate("postId")
       .populate("userId")
       .then((comments) => {
-        console.log(comments);
         res.json({ message: "success", comments });
       })
       .catch((error) => {
@@ -47,7 +45,12 @@ export const post_comment_get = (
 };
 
 export const comment_post = [
-  body("content", "Invalid post").not().isEmpty().trim().escape(),
+  body("content", "Invalid post")
+    .not()
+    .isEmpty()
+    .trim()
+    .escape()
+    .isLength({ max: 2500 }),
   (req: express.Request, res: express.Response, next: express.NextFunction) => {
     if (req.isAuthenticated()) {
       const errors = validationResult(req);

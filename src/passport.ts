@@ -28,11 +28,9 @@ passport.use(
       try {
         await User.findOne({ facebookId: profile.id }).then(async (user) => {
           if (user) {
-            console.log("existing user...");
             return cb(null, user);
           }
 
-          console.log("adding new user...");
           const newUser = new User({
             facebookId: profile.id,
             displayName: profile.displayName,
