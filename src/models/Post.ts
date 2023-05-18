@@ -14,6 +14,12 @@ const PostSchema = new mongoose.Schema({
     minlength: 1,
     maxlength: 5000,
   },
+
+  commentCount: {
+    type: Number,
+    default: 0,
+  },
+
   createdAt: {
     type: Date,
     default: Date.now,
@@ -26,7 +32,8 @@ const PostSchema = new mongoose.Schema({
 
 interface Post {
   userId: ObjectId;
-  content: string;
+  content: number;
+  commentCount: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

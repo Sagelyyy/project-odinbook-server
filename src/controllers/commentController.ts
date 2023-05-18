@@ -1,6 +1,7 @@
 import express from "express";
 import { body, validationResult } from "express-validator";
 import Comment from "../models/Comment";
+import Post from "../models/Post";
 
 export const comment_get = (
   req: express.Request,
@@ -45,13 +46,17 @@ export const post_comment_get = (
 };
 
 export const comment_post = [
-  body("content", "Invalid post")
+  body("content", "Post invalid")
     .not()
     .isEmpty()
     .trim()
     .escape()
     .isLength({ max: 2500 }),
-  (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
     if (req.isAuthenticated()) {
       const errors = validationResult(req);
       let messages = validationResult(req).array();
@@ -59,19 +64,25 @@ export const comment_post = [
         res.status(400).json({ message: messages });
         return;
       }
-      const newComment = new Comment({
-        content: req.body.content,
-        userId: req.user._id,
-        postId: req.params.id,
-      })
-        .save()
-        .then((comment) => {
-          res.json({ message: "success", comment });
-        })
-        .catch((err) => {
-          console.log(err);
-          res.status(400).json({ message: "Error", err });
+      try {
+        const newComment = new Comment({
+          content: req.body.content,
+          userId: req.user._id,
+          postId: req.params.id,
         });
+
+        const savedComment = await newComment.save();
+
+        await Post.updateOne(
+          { _id: req.params.id },
+          { $inc: { commentCount: 1 } }
+        );
+
+        res.json({ message: "success", comment: savedComment });
+      } catch (err) {
+        console.log(err);
+        res.status(400).json({ message: "Error", err });
+      }
     } else {
       res.sendStatus(403);
     }
