@@ -20,6 +20,15 @@ const PostSchema = new mongoose.Schema({
     default: 0,
   },
 
+  likeCount: {
+    type: Number,
+    default: 0,
+  },
+
+  likedBy: {
+    type: Array,
+  },
+
   createdAt: {
     type: Date,
     default: Date.now,
@@ -32,8 +41,9 @@ const PostSchema = new mongoose.Schema({
 
 interface Post {
   userId: ObjectId;
-  content: number;
-  commentCount: string;
+  content: string;
+  commentCount: number;
+  likeCount: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
