@@ -60,12 +60,48 @@ export const post_detail = (
   res.json({ message: "TODO post detail" });
 };
 
-export const post_update = (
+export const post_update = async (
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
 ) => {
-  res.json({ message: "TODO post update" });
+  if (req.isAuthenticated()) {
+    const postId = req.params.id;
+    const userId = req.user._id;
+
+    try {
+      const post = await Post.findById(postId);
+      if (!post) {
+        res.status(404).json({ message: "Post not found" });
+        return;
+      }
+
+      const updateFields: any = {};
+      if ("content" in req.body) {
+        updateFields.content = req.body.content;
+      }
+
+      if ("likes" in req.body) {
+        if (post.likedBy.includes(userId)) {
+          updateFields.$inc = { likeCount: -1 };
+          updateFields.$pull = { likedBy: req.user._id };
+        } else {
+          updateFields.$inc = { likeCount: 1 };
+          updateFields.$push = { likedBy: req.user._id };
+        }
+      }
+
+      const updatedPost = await Post.findByIdAndUpdate(postId, updateFields, {
+        new: true,
+      });
+      res.json({ message: "success", post: updatedPost });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({ message: "Error", err });
+    }
+  } else {
+    res.sendStatus(403);
+  }
 };
 
 export const post_delete = (

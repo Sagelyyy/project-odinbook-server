@@ -1,6 +1,16 @@
 import mongoose, { Document } from "mongoose";
 import { ObjectId } from "mongodb";
 
+interface PostDocument extends Document {
+  userId: ObjectId;
+  content: string;
+  commentCount: number;
+  likeCount: number;
+  likedBy: ObjectId[];
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 const PostSchema = new mongoose.Schema({
   userId: {
     type: ObjectId,
@@ -26,7 +36,7 @@ const PostSchema = new mongoose.Schema({
   },
 
   likedBy: {
-    type: Array,
+    type: [ObjectId],
   },
 
   createdAt: {
@@ -48,6 +58,6 @@ interface Post {
   updatedAt?: Date;
 }
 
-const PostModel = mongoose.model<Post & Document>("Post", PostSchema);
+const PostModel = mongoose.model<PostDocument>("Post", PostSchema);
 
 export { PostModel as default, Post };
